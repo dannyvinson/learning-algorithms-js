@@ -1,0 +1,133 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <title>Perceptron Learning Algorithm Demo</title>
+
+    <!-- Vendor CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.1/css/materialize.min.css">
+  </head>
+
+  <body>
+    <div class="row">
+    	<div class="col s12">
+    		<h1>Perceptron Learning Algorithm Demo</h1>
+    		<p>Use the perceptron learning algorithm to teach your computer how to use a logical operation (AND, OR, XOR). You may adjust the parameters below to see it in action.</p>
+    	</div>
+    </div>
+
+    <div class="row">
+    	<div class="input-field col s1">
+    		<input placeholder="5" id="epochs" type="number" min="1" max="1000" step="1">
+    		<label for="epochs" class="tooltipped" data-position="right" data-delay="50" data-tooltip="An epoch is a single pass of weight training with a set of inputs. Only integers from 1 to 1000 are valid for this field in this particular web app, since you'd probably prefer that it didn't crash.">Epochs</label>
+    	</div>
+
+    	<div class="input-field col s1">
+    		<input placeholder="0.1" id="learningRate" type="number" min="0" max="1">
+    		<label for="learningRate" class="tooltipped" data-position="right" data-delay="50" data-tooltip="The learning rate (or alpha) is a real number ranging from 0 to 1 that determines how quickly the program will learn a given operation. If it's too low, the program will learn slowly, probably requiring more epochs to compensate in weight training. If it's too high, the program may overcompensate on weights.">Learning Rate (α)</label>
+    	</div>
+
+    	<div class="input-field col s1">
+    		<input placeholder="0.2" id="threshold" type="number" min="-1" max="1">
+    		<label for="threshold" class="tooltipped" data-position="right" data-delay="50" data-tooltip="The threshold, or theta (since the threshold can be expressed as an angle of a line defining a plane or hyperplane), is a real number ranging from -1 to 1. It also limits output from getting out of hand with arbitrarily high numbers depending on the activation function.">Threshold (θ)</label>
+    	</div>
+
+    	<div class="col s2">
+    		<label for="dimensions" class="tooltipped" data-position="right" data-delay="50" data-tooltip="The dimensions represent the number of inputs used per iteration. The individual inputs are just combinations of 0s and 1s since the object of this application is to teach the computer very basic operations.">Dimensions (Number of Inputs)</label>
+
+    		<select id="dimensions" class="browser-default" style="height: 30px">
+    			<option value="2">2</option>
+    			<option value="3">3</option>
+    		</select>
+    	</div>
+
+    	<div class="col s2">
+    		<label for="activationName" class="tooltipped" data-position="right" data-delay="50" data-tooltip="For a given iteration, the activation function sums up all of the output combined with its assigned weight, limiting it with a threshold, and then it proceeds to operate on it with a step, sign, sigmoid, or linear function.">Activation Function</label>
+
+    		<select id="activationName" class="browser-default" style="height: 30px">
+    			<option value="step">Step</option>
+    			<option value="sign">Sign</option>
+    			<option value="sigmoid">Sigmoid</option>
+    			<option value="linear">Linear</option>
+    		</select>
+    	</div>
+
+    	<div class="col s2">
+    		<label for="operationName" class="tooltipped" data-position="right" data-delay="50" data-tooltip="The operation to learn is just that ... the operation we want the computer to reproduce provided the desired output without actually using the operation, but instead with a trained set of weights.">Operation to Learn</label>
+
+    		<select id="operationName" class="browser-default" style="height: 30px">
+    			<option value="or">Logical OR (a || b)</option>
+    			<option value="and">Logical AND (a && b)</option>
+    			<option value="xor">Logical XOR (a && !b) || (!a && b)</option>
+    		</select>
+    	</div>
+    </div>
+
+    <div class="row">
+    	<div class="col s2">
+    		<div class="input-field">
+    			<p style="margin-top: 0px">
+    				<input type="checkbox" id="randomizeWeights" />
+    				<label for="randomizeWeights">Randomize Initial Weights?</label>
+    			</p>
+    		</div>
+    	</div>
+
+    	<div class="col s2" id="weight1Box">
+    		<label for="weight1" class="tooltipped" data-position="right" data-delay="50" data-tooltip="The weight is a real number ranging from -0.5 to 0.5. It is trained iteration after iteration to hopefully reproduce a simple operation. Weight 1 corresponds to the first input, x1.">Weight 1</label>
+    		<input placeholder="0.3" id="weight1" type="number" min="-0.5" max="0.5">
+    	</div>
+
+    	<div class="col s2" id="weight2Box">
+    		<label for="weight2" class="tooltipped" data-position="right" data-delay="50" data-tooltip="The weight is a real number ranging from -0.5 to 0.5. It is trained iteration after iteration to hopefully reproduce a simple operation. Weight 2 corresponds to the second input, x2.">Weight 2</label>
+    		<input placeholder="0.1" id="weight2" type="number" min="-0.5" max="0.5">
+    	</div>
+
+    	<div class="col s2" id="weight3Box">
+    		<label for="weight3" class="tooltipped" data-position="right" data-delay="50" data-tooltip="The weight is a real number ranging from -0.5 to 0.5. It is trained iteration after iteration to hopefully reproduce a simple operation. Weight 3 corresponds to the third input, x3.">Weight 3</label>
+    		<input placeholder="0.3" id="weight3" type="number" min="-0.5" max="0.5">
+    	</div>
+
+    	<div class="input-field col s1">
+    		<button id="learnButton" class="btn waves-effect waves-light tooltipped" data-position="right" data-delay="50" data-tooltip="Run the learning algorithm!">Learn
+    			<i class="material-icons right">send</i>
+    		</button>
+    	</div>
+    </div>
+
+    <div id="higherDimensionWarning" class="row">
+    	<div class="col s12">
+    		<p style="margin: 0; padding: 0;"><span style="color: red;">*</span> Note that 3-dimensional operations are not <a href="https://www.wikipedia.org/wiki/Commutative_property" target="_blank">commutative</a>! Inputs are evaluated from left to right, passing output of an operation to the next (as an input) for a given iteration.</p>
+    	</div>
+    </div>
+
+    <div class="row">
+    	<div class="col s12">
+    		<table class="striped responsive-table">
+    			<thead style="background-color: #fff;">
+    				<tr>
+    					<th>Epoch</th>
+    					<th>Inputs</th>
+    					<th>Desired Output</th>
+    					<th>Weights</th>
+    					<th>Actual Output</th>
+    					<th>Error</th>
+    				</tr>
+    			</thead>
+
+    			<tbody id="tableBody"></tbody>
+    		</table>
+    	</div>
+    </div>
+
+    <!-- Vendor JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.1/js/materialize.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/floatthead/1.3.1/jquery.floatThead.min.js"></script>
+
+    <!-- Project JS -->
+    <script src="functions.js"></script>
+    <script src="perceptron.js"></script>
+  </body>
+</html>
