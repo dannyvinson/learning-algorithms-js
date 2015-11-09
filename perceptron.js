@@ -163,6 +163,9 @@ function init() {
 	// Iterate with the actual steps of algorithm:
 	for (var i = 1; i <= numEpochs; ++i) { // For each epoch...
 		for (var j = 0; j < inputs.length; ++j) { // For each combination of inputs in a given epoch...
+			// Get current weights for printing later:
+			var currentWeights = weights.toString().replace(/,/g, ', ');
+
 			// Update control variables:
 			desiredOutput = calcDesiredOutput(inputs[j], operationName);
 			actualOutput = activate(inputs[j], weights, threshold, activationName);
@@ -171,7 +174,7 @@ function init() {
 
 			// Additionally, update view:
 			tableRow = document.createElement('tr');
-			appendToTable([i + "." + (j + 1), inputs[j].toString().replace(/,/g, ', '), desiredOutput, weights.toString().replace(/,/g, ', '), actualOutput, error]);
+			appendToTable([i + "." + (j + 1), inputs[j].toString().replace(/,/g, ', '), desiredOutput, currentWeights, actualOutput, error]);
 		}
 	}
 }
