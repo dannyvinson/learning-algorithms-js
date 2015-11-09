@@ -50,8 +50,8 @@ function activate(inputs, weights, threshold, type) {
 	output -= threshold;
 
 	// Groom output according to type of applied function:
-	if (type === 'step') return step(output, threshold);
-	else if (type === 'sign') return sign(output, threshold);
+	if (type === 'step') return step(output);
+	else if (type === 'sign') return sign(output);
 	else if (type === 'sigmoid') return sigmoid(output);
 	else if (type === 'linear') return output.toFixed(3);
 }
@@ -62,8 +62,8 @@ function activate(inputs, weights, threshold, type) {
  * @param {number} threshold
  * @returns {number}
  */
-function step(output, threshold) {
-	if (output >= threshold) return 1;
+function step(output) {
+	if (output >= 0) return 1;
 	else return 0;
 }
 
@@ -73,8 +73,8 @@ function step(output, threshold) {
  * @param {number} threshold
  * @returns {number}
  */
-function sign(output, threshold) {
-	if (output >= threshold) return 1;
+function sign(output) {
+	if (output >= 0) return 1;
 	else return -1;
 }
 
