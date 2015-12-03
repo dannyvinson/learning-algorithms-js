@@ -3,16 +3,51 @@
  */
 
 /**
-  * Transposes a given matrix.
+  * Matrix transposition wrapper.
   * @param {array} matrix
   * @returns {array}
   */
 function transpose(matrix) {
+	var rows = matrix.length,
+			cols = matrix[0].length;
+
+	if (rows === cols) return transposeSquare(matrix, rows, cols);
+	else return transposeRect(matrix, rows, cols);
+}
+
+/**
+  * Square matrix transposition (should be used if rows = cols)
+  * @param {array} matrix
+	* @param {array} rows
+	* @param {array} cols
+  * @returns {array}
+  */
+function transposeSquare(matrix, rows, cols) {
 	var newMatrix = deepCopy(matrix);
 
-	for (var i = 0; i < matrix.length; ++i) // Rows.
-		for (var j = 0; j < matrix[0].length; ++j) // Columns.
+	for (var i = 0; i < rows; ++i)
+		for (var j = 0; j < cols; ++j)
 			if (i != j) newMatrix[i][j] = matrix[j][i];
+
+	return newMatrix;
+}
+
+/**
+  * Rectangular matrix transposition
+  * @param {array} matrix
+	* @param {array} rows
+	* @param {array} cols
+  * @returns {array}
+  */
+function transposeRect(matrix, rows, cols) {
+	var newMatrix = [];
+
+	for (var i = 0; i < cols; ++i)
+		newMatrix.push([]);
+
+	for (i = 0; i < rows; ++i)
+		for (var j = 0; j < cols; ++j)
+			newMatrix[j].push(matrix[i][j]);
 
 	return newMatrix;
 }
