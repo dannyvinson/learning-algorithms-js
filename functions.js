@@ -12,8 +12,7 @@ function transpose(matrix) {
 
 	for (var i = 0; i < matrix.length; ++i) // Rows.
 		for (var j = 0; j < matrix[0].length; ++j) // Columns.
-			if (i != j)
-				newMatrix[i][j] = matrix[j][i];
+			if (i != j) newMatrix[i][j] = matrix[j][i];
 
 	return newMatrix;
 }
