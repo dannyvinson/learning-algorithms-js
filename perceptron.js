@@ -116,8 +116,8 @@ function init() {
 		weights = [].splice(0);
 
 		if ($('#randomizeWeights').is(':checked')) {
-			weights = [Math.random() - 0.5, Math.random() - 0.5].splice(0);
-			if (dimensions === 3) weights.push(Math.random() - 0.5);
+			weights = [parseFloat((Math.random() - 0.5).toFixed(3)), parseFloat((Math.random() - 0.5).toFixed(3))].splice(0);
+			if (dimensions === 3) weights.push(parseFloat((Math.random() - 0.5).toFixed(3)));
 		} else {
 			if (parseFloat($('#weight1').val()) && parseFloat($('#weight1').val()) >= -0.5 && parseFloat($('#weight1').val()) <= 0.5)
 				weights.push(parseFloat($('#weight1').val()));
