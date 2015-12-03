@@ -3,6 +3,31 @@
  */
 
 /**
+  * Transposes a given matrix.
+  * @param {array} matrix
+  * @returns {array}
+  */
+function transpose(matrix) {
+	var newMatrix = deepCopy(matrix);
+
+	for (var i = 0; i < matrix.length; ++i) // Rows.
+		for (var j = 0; j < matrix[0].length; ++j) // Columns.
+			if (i != j)
+				newMatrix[i][j] = matrix[j][i];
+
+	return newMatrix;
+}
+
+/**
+  * Deep (not shallow) copy a given array.
+  * @param {array} arr
+  * @returns {array}
+  */
+function deepCopy(array) {
+	return JSON.parse(JSON.stringify(array));
+}
+
+/**
  * Use the inputs to calculate the desired output of logical AND, OR, and XOR by specifying type.
  * @param {array} inputs
  * @param {string} type
