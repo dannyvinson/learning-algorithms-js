@@ -38,7 +38,7 @@ function multiply(A, B) {
  	var rowsA = A.length, colsA = A[0].length,
 			rowsB = B.length, colsB = B[0].length;
 
-	if (colsA != rowsB) {
+	if (colsA !== rowsB) {
 		console.log("ERROR: Columns of A not equal to rows of B.");
 		return; // Returns undefined.
 	}
