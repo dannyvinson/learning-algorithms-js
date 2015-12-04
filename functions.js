@@ -2,12 +2,12 @@
  * @author reesington / codepen.io/reesington
  */
 
- /**
-   * Multiplies two matrices A and B resulting in C.
-   * @param {array} A
-	 * @param {array} B
-   * @returns {array}
-   */
+/**
+  * Multiplies two matrices A and B resulting in C.
+  * @param {array} A
+	* @param {array} B
+  * @returns {array}
+  */
 function multiply(A, B) {
  	var rowsA = A.length, colsA = A[0].length,
 			rowsB = B.length, colsB = B[0].length;
