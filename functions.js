@@ -3,6 +3,25 @@
  */
 
 /**
+  * Creates a null matrix with the provided rows and columns.
+  * @param {number} rows
+  * @param {number} cols
+  * @returns {array}
+  */
+function createNullMatrix(rows, cols) {
+  var matrix = [];
+
+  for (var i = 0; i < rows; ++i)
+    matrix.push([]);
+
+  for (i = 0; i < rows; ++i)
+    for (var j = 0; j < cols; ++j)
+      matrix[i].push(0);
+
+  return matrix;
+}
+
+/**
   * Adds two matrices A and B resulting in C.
   * @param {array} matrix
   * @returns {array}
