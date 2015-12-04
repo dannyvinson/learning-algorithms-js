@@ -3,6 +3,32 @@
  */
 
 /**
+  * Adds two matrices A and B resulting in C.
+  * @param {array} matrix
+  * @returns {array}
+  */
+ function add(A, B) {
+   var rowsA = A.length, colsA = A[0].length,
+ 			 rowsB = B.length, colsB = B[0].length;
+
+   if (rowsA !== rowsB || colsA !== colsB) {
+     console.log("ERROR: A and B are not of the same dimensions.");
+ 		 return; // Returns undefined.
+   }
+
+   var C = [];
+
+   for (var i = 0; i < rowsA; ++i) {
+     C.push([]);
+
+     for (var j = 0; j < colsA; ++j)
+       C[i][j] = A[i][j] + B[i][j];
+   }
+
+   return C;
+ }
+
+/**
   * Multiplies two matrices A and B resulting in C.
   * @param {array} A
 	* @param {array} B
