@@ -2,6 +2,37 @@
  * @author reesington / codepen.io/reesington
  */
 
+ /**
+   * Multiplies two matrices A and B resulting in C.
+   * @param {array} A
+	 * @param {array} B
+   * @returns {array}
+   */
+function multiply(A, B) {
+ 	var rowsA = A.length, colsA = A[0].length,
+			rowsB = B.length, colsB = B[0].length;
+
+	if (colsA != rowsB) {
+		console.log("ERROR: Columns of A not equal to rows of B.");
+		return; // Returns undefined.
+	}
+
+	var C = [];
+
+	for (var i = 0; i < rowsA; ++i) {
+		C.push([]);
+
+		for (var j = 0; j < colsB; ++j) {
+			C[i][j] = 0;
+
+			for (var k = 0; k < rowsB; ++k)
+				C[i][j] += A[i][k] * B[k][j];
+		}
+	}
+
+	return C;
+}
+
 /**
   * Matrix transposition wrapper.
   * @param {array} matrix
