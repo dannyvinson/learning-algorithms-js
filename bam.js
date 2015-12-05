@@ -2,57 +2,51 @@
  * @author reesington / codepen.io/reesington
  */
 
-var numEpochs = 1,
-		valid = false, // Validity of general execution.
+var valid = false, // Validity of general execution.
+		numEpochs = 10,
 
-// Set matrices A and B.
+// Set matrices A (input) and B (output).
 		matrixA = [
-								[[1],
-								 [1],
-								 [1],
-								 [1],
-								 [1],
-								 [1]],
+			[[-1, 1, 1, 1, -1], // A
+			 [-1, 1, -1, 1, -1],
+			 [-1, 1, 1, 1, -1],
+			 [-1, 1, -1, 1, -1],
+			 [1, 1, -1, 1, 1]],
 
-								[[-1],
- 								 [-1],
- 								 [-1],
- 								 [-1],
- 								 [-1],
- 								 [-1]],
+			[[-1, 1, 1, 1, 1], // B
+			 [-1, 1, -1, -1, 1],
+			 [-1, 1, -1, 1, -1],
+			 [-1, 1, -1, -1, 1],
+			 [-1, 1, 1, 1, -1]],
 
-								[[1],
- 								 [1],
- 								 [-1],
- 								 [-1],
- 								 [1],
- 								 [1]],
+			[[-1, 1, 1, 1, -1], // C
+			 [-1, 1, 1, 1, -1],
+			 [1, 1, -1, -1, -1],
+			 [-1, 1, 1, 1, -1],
+			 [-1, 1, 1, 1, -1]],
 
-								[[-1],
-  							 [-1],
-  							 [1],
-  							 [1],
-  							 [-1],
-  							 [-1]]
-							 ],
+			[[-1, 1, 1, 1, -1], // D
+			 [-1, 1, 1, 1, 1],
+			 [-1, 1, -1, -1, 1],
+			 [-1, 1, 1, 1, 1],
+			 [-1, 1, 1, 1, -1]],
+
+			[[-1, 1, 1, 1, 1], // E
+			 [-1, 1, -1, -1, -1],
+			 [-1, 1, 1, 1, -1],
+			 [-1, 1, -1, -1, -1],
+			 [-1, 1, 1, 1, 1]] ],
 
 		matrixB = [
-								[[1],
-								 [1],
-								 [1]],
+			[[-1, 1, -1, 1, -1]], // A
 
-								[[-1],
- 								 [-1],
- 								 [-1]],
+			[[-1, 1, -1, -1, 1]], // B
 
-								[[1],
- 								 [-1],
- 								 [1]],
+			[[-1, 1, 1, 1, -1]], // C
 
-								[[-1],
- 								 [1],
- 								 [-1]]
-							];
+			[[-1, 1, 1, 1, 1]], // D
+
+			[[-1, 1, -1, -1, -1]] ]; // E
 
 // Check that the matrices have vectors:
 if (matrixA.length > 0 && matrixB.length > 0)
@@ -69,18 +63,23 @@ if (valid === true) {
 	var patternPairs = matrixA.length,
 			weights = createMatrix(matrixA[0].length, matrixB[0].length);
 
-	for (i = 0; i < numEpochs; ++i) { // For each epoch...
-		for (var j = 0; j < patternPairs; ++j) { // For each pattern pair...
-			console.log("Given matrix A =")
-			console.table(matrixA[j]);
-			console.log("Given matrix B =")
-			console.table(matrixB[j]);
+	// Calculate weight matrix:
+	for (var i = 0; i < patternPairs; ++i) // For each pattern pair...
+		weights = add(weights, multiply(matrixA[i], transpose(matrixB[i])));
 
-			weights = add(weights, multiply(matrixA[j], transpose(matrixB[j])));
+	console.log("Weight matrix W = ");
+	console.table(weights);
 
-			console.log("Update to weight matrix W = ");
-			console.table(weights);
-		}
+	// Test probes:
+	for (i = 0; i < patternPairs; ++i) {
+		console.log("Inputting A =")
+		console.table(matrixA[i]);
+
+		console.log("Results in B =")
+		console.table(new Array (multiply(transpose(weights), matrixA[i])[0].map(sign)));
+
+		console.log("Which should =")
+		console.table(matrixB[i]);
 	}
 } else {
 	console.log("ERROR: Matrices were not properly inputted.");
