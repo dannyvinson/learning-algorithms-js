@@ -7,28 +7,11 @@ var drawingCanvas = document.getElementById('drawing'),
 		drawingContext = drawingCanvas.getContext('2d'),
 		bamCanvas = document.getElementById('bam'),
 		bamContext = bamCanvas.getContext('2d'),
-		gridSize = 500;
+		gridSize = 500,
+		stepSize = gridSize / 5;
 
 drawGrid(drawingContext);
 drawGrid(bamContext);
-
-function drawGrid(context) {
-	for (var i = 100; i < gridSize; i += 100) {
-		context.beginPath() // Columns.
-			context.moveTo(i, 0);
-			context.lineTo(i, 500);
-		context.closePath();
-
-		context.stroke();
-
-		context.beginPath() // Rows.
-			context.moveTo(0, i);
-			context.lineTo(500, i);
-		context.closePath();
-
-		context.stroke();
-	}
-}
 
 var valid = false; // Validity of general execution.
 
@@ -105,13 +88,64 @@ if (valid === true) {
 		console.table(matrixA[i]);
 
 		console.log("Results in B =")
-		console.table(new Array (multiply(transpose(weights), matrixA[i])[0].map(sign)));
+
+		var recall = new Array(multiply(transpose(weights), matrixA[i])[0].map(sign))
+
+		console.log("Recall:");
+		console.table(recall);
 
 		console.log("Which should =")
 		console.table(matrixB[i]);
 	}
+
+	// Get ideal matrix associated with recalled output to draw on bamCanvas:
+	for (i = 0; i < patternPairs; ++i) {
+		if (matrixEquals(recall[0], matrixB[i][0])) {
+			drawMatrix(bamContext, transpose(matrixA[i]));
+
+			break;
+		}
+	}
 } else {
 	console.log("ERROR: Matrices were not properly inputted.");
+}
+
+function drawMatrix(context, matrix) {
+	console.log("Draw the following matrix:");
+
+	console.table(matrix);
+
+	for (var i = 0; i < matrix.length; ++i)
+		for (var j = 0; j < matrix[0].length; ++j)
+			if (matrix[i][j] === 1)
+				context.fillRect(i * stepSize, j * stepSize, i + stepSize, j + stepSize);
+}
+
+function drawGrid(context) {
+	for (var i = 100; i < gridSize; i += 100) {
+		context.beginPath() // Columns.
+			context.moveTo(i, 0);
+			context.lineTo(i, 500);
+		context.closePath();
+
+		context.stroke();
+
+		context.beginPath() // Rows.
+			context.moveTo(0, i);
+			context.lineTo(500, i);
+		context.closePath();
+
+		context.stroke();
+	}
+}
+
+function matrixEquals(A, B) {
+	if (!checkMatrixLength(A, B)) return false;
+
+	for (var i = 0; i < A.length; ++i)
+		if (A[i] !== B[i]) return false;
+
+	return true;
 }
 
 function checkMatrixLength(matrixA, matrixB) {
