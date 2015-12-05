@@ -3,12 +3,13 @@
  */
 
 /**
-  * Creates a null matrix with the provided rows and columns.
+  * Creates a null matrix if id = false or an identity matrix if id = true.
   * @param {number} rows
   * @param {number} cols
+  * @param {boolean} id
   * @returns {array}
   */
-function createNullMatrix(rows, cols) {
+function createMatrix(rows, cols, id) {
   var matrix = [];
 
   for (var i = 0; i < rows; ++i)
@@ -16,7 +17,8 @@ function createNullMatrix(rows, cols) {
 
   for (i = 0; i < rows; ++i)
     for (var j = 0; j < cols; ++j)
-      matrix[i].push(0);
+      if (id && i === j) matrix[i].push(1);
+      else matrix[i].push(0);
 
   return matrix;
 }
