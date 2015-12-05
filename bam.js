@@ -2,8 +2,35 @@
  * @author reesington / codepen.io/reesington
  */
 
-var valid = false, // Validity of general execution.
-		numEpochs = 10,
+// Canvas setup:
+var drawingCanvas = document.getElementById('drawing'),
+		drawingContext = drawingCanvas.getContext('2d'),
+		bamCanvas = document.getElementById('bam'),
+		bamContext = bamCanvas.getContext('2d'),
+		gridSize = 500;
+
+drawGrid(drawingContext);
+drawGrid(bamContext);
+
+function drawGrid(context) {
+	for (var i = 100; i < gridSize; i += 100) {
+		context.beginPath() // Columns.
+			context.moveTo(i, 0);
+			context.lineTo(i, 500);
+		context.closePath();
+
+		context.stroke();
+
+		context.beginPath() // Rows.
+			context.moveTo(0, i);
+			context.lineTo(500, i);
+		context.closePath();
+
+		context.stroke();
+	}
+}
+
+var valid = false; // Validity of general execution.
 
 // Set matrices A (input) and B (output).
 		matrixA = [
@@ -35,7 +62,8 @@ var valid = false, // Validity of general execution.
 			 [-1, 1, -1, -1, -1],
 			 [-1, 1, 1, 1, -1],
 			 [-1, 1, -1, -1, -1],
-			 [-1, 1, 1, 1, 1]] ],
+			 [-1, 1, 1, 1, 1]]
+		],
 
 		matrixB = [
 			[[-1, 1, -1, 1, -1]], // A
@@ -46,7 +74,8 @@ var valid = false, // Validity of general execution.
 
 			[[-1, 1, 1, 1, 1]], // D
 
-			[[-1, 1, -1, -1, -1]] ]; // E
+			[[-1, 1, -1, -1, -1]] // E
+		];
 
 // Check that the matrices have vectors:
 if (matrixA.length > 0 && matrixB.length > 0)
@@ -70,7 +99,7 @@ if (valid === true) {
 	console.log("Weight matrix W = ");
 	console.table(weights);
 
-	// Test probes:
+	// Test recollection:
 	for (i = 0; i < patternPairs; ++i) {
 		console.log("Inputting A =")
 		console.table(matrixA[i]);
