@@ -8,7 +8,8 @@ var drawingCanvas = document.getElementById('drawing'),
 		bamCanvas = document.getElementById('bam'),
 		bamContext = bamCanvas.getContext('2d'),
 		gridSize = 500,
-		stepSize = gridSize / 5;
+		stepSize = gridSize / 5,
+		drawing = createMatrix(5, 5);
 
 drawGrid(drawingContext);
 drawGrid(bamContext);
@@ -101,7 +102,7 @@ if (valid === true) {
 	// Get ideal matrix associated with recalled output to draw on bamCanvas:
 	for (i = 0; i < patternPairs; ++i) {
 		if (matrixEquals(recall[0], matrixB[i][0])) {
-			drawMatrix(bamContext, transpose(matrixA[i]));
+			drawMatrix(bamContext, matrixA[i]);
 
 			break;
 		}
@@ -110,15 +111,35 @@ if (valid === true) {
 	console.log("ERROR: Matrices were not properly inputted.");
 }
 
+// Events:
+drawingCanvas.addEventListener('mousemove', function(event) {
+	event.preventDefault();
+
+	var mouseX = Math.floor(event.pageX - $('#drawing').offset().left),
+			mouseY = Math.floor(event.pageY - $('#drawing').offset().top),
+			row = Math.ceil(mouseX / stepSize),
+			col = Math.ceil(mouseY / stepSize);
+
+	if (col > 5) col = 5;
+	if (row > 5) row = 5;
+
+	drawing[col - 1][row - 1] = 1;
+
+	redraw(drawingContext, drawing);
+}, false);
+
+// Utility functions:
+function redraw(context, matrix) {
+	context.clearRect(0, 0, 500, 500);
+	drawGrid(context);
+	drawMatrix(context, matrix);
+}
+
 function drawMatrix(context, matrix) {
-	console.log("Draw the following matrix:");
-
-	console.table(matrix);
-
-	for (var i = 0; i < matrix.length; ++i)
-		for (var j = 0; j < matrix[0].length; ++j)
+	for (var i = 0; i < matrix.length; ++i) // Rows
+		for (var j = 0; j < matrix[0].length; ++j) // Columns
 			if (matrix[i][j] === 1)
-				context.fillRect(i * stepSize, j * stepSize, i + stepSize, j + stepSize);
+				context.fillRect(j * stepSize, i * stepSize, j + stepSize, i + stepSize);
 }
 
 function drawGrid(context) {
