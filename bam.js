@@ -9,7 +9,13 @@ var drawingCanvas = document.getElementById('drawing'),
 		bamContext = bamCanvas.getContext('2d'),
 		gridSize = 500,
 		stepSize = gridSize / 5,
-		drawing = createMatrix(5, 5);
+		drawing = [
+			[-1, -1, -1, -1, -1],
+		  [-1, -1, -1, -1, -1],
+		  [-1, -1, -1, -1, -1],
+		  [-1, -1, -1, -1, -1],
+		  [-1, -1, -1, -1, -1]
+		];
 
 drawGrid(drawingContext);
 drawGrid(bamContext);
@@ -24,21 +30,21 @@ var valid = false; // Validity of general execution.
 			 [-1, 1, -1, 1, -1],
 			 [1, 1, -1, 1, 1]],
 
-			[[-1, 1, 1, 1, 1], // B
+			[[-1, 1, 1, 1, -1], // B
 			 [-1, 1, -1, -1, 1],
 			 [-1, 1, -1, 1, -1],
 			 [-1, 1, -1, -1, 1],
 			 [-1, 1, 1, 1, -1]],
 
-			[[-1, 1, 1, 1, -1], // C
+			[[-1, -1, -1, -1, -1], // C
 			 [-1, 1, 1, 1, -1],
-			 [1, 1, -1, -1, -1],
+			 [-1, 1, -1, -1, -1],
 			 [-1, 1, 1, 1, -1],
-			 [-1, 1, 1, 1, -1]],
+			 [-1, -1, -1, -1, -1]],
 
 			[[-1, 1, 1, 1, -1], // D
-			 [-1, 1, 1, 1, 1],
-			 [-1, 1, -1, -1, 1],
+			 [-1, 1, -1, 1, 1],
+			 [-1, 1, -1, 1, 1],
 			 [-1, 1, 1, 1, 1],
 			 [-1, 1, 1, 1, -1]],
 
@@ -79,39 +85,15 @@ if (valid === true) {
 	// Calculate weight matrix:
 	for (var i = 0; i < patternPairs; ++i) // For each pattern pair...
 		weights = add(weights, multiply(matrixA[i], transpose(matrixB[i])));
-
-	console.log("Weight matrix W = ");
-	console.table(weights);
-
-	// Test recollection:
-	for (i = 0; i < patternPairs; ++i) {
-		console.log("Inputting A =")
-		console.table(matrixA[i]);
-
-		console.log("Results in B =")
-
-		var recall = new Array(multiply(transpose(weights), matrixA[i])[0].map(sign))
-
-		console.log("Recall:");
-		console.table(recall);
-
-		console.log("Which should =")
-		console.table(matrixB[i]);
-	}
-
-	// Get ideal matrix associated with recalled output to draw on bamCanvas:
-	for (i = 0; i < patternPairs; ++i) {
-		if (matrixEquals(recall[0], matrixB[i][0])) {
-			drawMatrix(bamContext, matrixA[i]);
-
-			break;
-		}
-	}
 } else {
 	console.log("ERROR: Matrices were not properly inputted.");
 }
 
 // Events:
+drawingCanvas.addEventListener('contextmenu', function(event) {
+	event.preventDefault();
+}, false);
+
 drawingCanvas.addEventListener('mousemove', function(event) {
 	event.preventDefault();
 
@@ -123,7 +105,24 @@ drawingCanvas.addEventListener('mousemove', function(event) {
 	if (col > 5) col = 5;
 	if (row > 5) row = 5;
 
-	drawing[col - 1][row - 1] = 1;
+	if (event.which === 1) drawing[col - 1][row - 1] = 1;
+	else drawing[col - 1][row - 1] = -1;
+
+	var recall = new Array(multiply(transpose(weights), drawing)[0].map(sign));
+
+	// Get ideal matrix associated with drawing to draw on bamCanvas:
+	for (i = 0; i < patternPairs; ++i) {
+		if (matrixEquals(recall[0], matrixB[i][0])) {
+			bamContext.clearRect(0, 0, 500, 500);
+			drawGrid(bamContext);
+			drawMatrix(bamContext, matrixA[i]);
+
+			break;
+		} else {
+			bamContext.clearRect(0, 0, 500, 500);
+			drawGrid(bamContext);
+		}
+	}
 
 	redraw(drawingContext, drawing);
 }, false);
