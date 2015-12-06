@@ -42,11 +42,11 @@ var valid = false; // Validity of general execution.
 			 [-1, 1, 1, 1, -1],
 			 [-1, -1, -1, -1, -1]],
 
-			[[-1, 1, 1, 1, -1], // D
-			 [-1, 1, -1, 1, 1],
-			 [-1, 1, -1, 1, 1],
-			 [-1, 1, 1, 1, 1],
-			 [-1, 1, 1, 1, -1]],
+			[[1, 1, 1, -1, -1], // D
+			 [1, -1, -1, 1, -1],
+			 [1, -1, -1, 1, -1],
+			 [1, -1, -1, 1, -1],
+			 [1, 1, 1, -1, -1]],
 
 			[[-1, 1, 1, 1, 1], // E
 			 [-1, 1, -1, -1, -1],
@@ -62,7 +62,7 @@ var valid = false; // Validity of general execution.
 
 			[[-1, 1, 1, 1, -1]], // C
 
-			[[-1, 1, 1, 1, 1]], // D
+			[[1, -1, -1, 1, -1]], // D
 
 			[[-1, 1, -1, -1, -1]] // E
 		];
@@ -93,6 +93,10 @@ if (valid === true) {
 drawingCanvas.addEventListener('contextmenu', function(event) {
 	event.preventDefault();
 }, false);
+
+var recallProbe = new Array(multiply(transpose(weights), matrixA[3])[0].map(sign));
+
+console.table(recallProbe);
 
 drawingCanvas.addEventListener('mousemove', function(event) {
 	event.preventDefault();
