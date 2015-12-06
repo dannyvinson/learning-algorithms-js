@@ -2,6 +2,21 @@
  * @author reesington / codepen.io/reesington
  */
 
+ /**
+   * Find Euclidean distance between two vectors.
+   * @param {array} vectorA
+   * @param {array} vectorB
+   * @returns {number}
+   */
+function euclidDist(vectorA, vectorB) {
+  var distance = 0;
+
+  for (var i = 0; i < vectorA.length; ++i)
+    distance += Math.pow(vectorA[i] - vectorB[i], 2);
+
+  return Math.sqrt(distance);
+}
+
 /**
   * Creates a null matrix if id = false or an identity matrix if id = true.
   * @param {number} rows
