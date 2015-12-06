@@ -22,7 +22,7 @@ drawGrid(bamContext);
 
 var valid = false; // Validity of general execution.
 
-// Set matrices A (input) and B (output).
+// Set matrices A (input representing characters) and B (output).
 		matrixA = [
 			[[-1, 1, 1, 1, -1], // A
 			 [-1, 1, -1, 1, -1],
@@ -127,13 +127,22 @@ drawingCanvas.addEventListener('mousemove', function(event) {
 	redraw(drawingContext, drawing);
 }, false);
 
-// Utility functions:
+/**
+  * Redraws a given matrix on a given context.
+  * @param {context} context
+  * @param {array} matrix
+  */
 function redraw(context, matrix) {
 	context.clearRect(0, 0, 500, 500);
 	drawGrid(context);
 	drawMatrix(context, matrix);
 }
 
+/**
+  * Draws a given matrix on a given context.
+  * @param {context} context
+  * @param {array} matrix
+  */
 function drawMatrix(context, matrix) {
 	for (var i = 0; i < matrix.length; ++i) // Rows
 		for (var j = 0; j < matrix[0].length; ++j) // Columns
@@ -141,6 +150,10 @@ function drawMatrix(context, matrix) {
 				context.fillRect(j * stepSize, i * stepSize, j + stepSize, i + stepSize);
 }
 
+/**
+  * Draws a grid on the given context.
+  * @param {context} context
+  */
 function drawGrid(context) {
 	for (var i = 100; i < gridSize; i += 100) {
 		context.beginPath() // Columns.
@@ -159,6 +172,12 @@ function drawGrid(context) {
 	}
 }
 
+/**
+  * Tests if the given matrices are equal.
+  * @param {array} A
+  * @param {array} B
+  * @returns {boolean}
+  */
 function matrixEquals(A, B) {
 	if (!checkMatrixLength(A, B)) return false;
 
@@ -168,13 +187,23 @@ function matrixEquals(A, B) {
 	return true;
 }
 
+/**
+  * Tests the number of elements in the given matrices for equality.
+  * @param {array} matrixA
+  * @param {array} matrixB
+  * @returns {boolean}
+  */
 function checkMatrixLength(matrixA, matrixB) {
 	if (matrixA.length !== matrixB.length) return false;
 
 	return true;
 }
 
-// Returns false if not valid; true if valid
+/**
+  * Tests if a matrix's vectors all have the same dimension.
+  * @param {array} matrix
+  * @returns {boolean}
+  */
 function checkVectorLength(matrix) {
 	var length = matrix[0].length;
 
