@@ -94,10 +94,6 @@ drawingCanvas.addEventListener('contextmenu', function(event) {
 	event.preventDefault();
 }, false);
 
-var recallProbe = new Array(multiply(transpose(weights), matrixA[3])[0].map(sign));
-
-console.table(recallProbe);
-
 drawingCanvas.addEventListener('mousemove', function(event) {
 	event.preventDefault();
 
