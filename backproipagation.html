@@ -1,0 +1,430 @@
+<html>
+<head>
+<title>JavaScript Backpropagation Simulator</title>
+
+
+<script>
+
+
+//VARIABLES
+
+var outerror=0
+var current_cycle=0
+var cycles_to_run=0
+var learnrate=0.1
+var momentum=0.9
+var inputset
+var hiddenset
+var outputset
+var biasset
+var i_patterns
+var t_patterns
+var input_nr=0
+var target_nr=0
+var curinputPattern=0
+var current_t_pattern=0
+var nr_input_patterns
+var input_string_index=0
+var target_string_index=0
+var network_ready=0
+var imageslength
+var newWeights = [];
+var Actbg
+
+
+
+   
+//UNIT, LINK AND SET OBJECTS
+
+function Unit () {
+   this.Output=0;
+   this.Netinput=0;
+   this.Target=0;
+   this.Error=0;
+   this.Links;
+   this.UpdateOutput=UpdateOutput;
+   this.WeightedSum=WeightedSum;
+   this.SetOutputError=SetOutputError;
+   this.SetHiddenError=SetHiddenError;
+}
+
+function Link (from, to, weight) {
+   this.Weight=weight;
+   newWeights.push(weight);
+   this.Free1=0;
+   this.Next;
+   this.From=from;
+   this.To=to;
+   this.FromFirstHiddenBackwards =FromFirstHiddenBackwards;
+   this.Backwards =Backwards; 
+}
+
+function Set (name, length) {
+   this.Members=new Array(length);
+   this.Name=name;
+   this.Length=length;
+}
+
+
+//SET AND LINK 'CONSTRUCTOR' FUNCTIONS
+
+function MakeSet (name, length){
+  var n;
+  var set;
+  set=new Set(name, length);  
+  for (n=0; n<length; n++){
+     set.Members[n]=new Unit()
+  }
+  return set
+}
+
+function CreateLink (from, to, hi, lo){
+   var i
+   var p
+   var r
+   r=myrandom(hi, lo)
+   p=new Link(from, to, r)
+   p.Next=to.Links
+   to.Links=p
+}
+
+function SetMember (set, index){
+   return set.Members[index]
+}
+
+
+//TRAVERSING FUNCTIONS
+
+function TraverseSet (set, function_name){
+   var i
+   var setlength
+   var unit
+
+   setlength=set.Length;
+   for (i=0; i<setlength; i++){
+      unit=SetMember(set, i);
+      eval ("unit."+function_name+"()");
+   }
+}
+
+function TraverseSetLinks (set, function_name){
+   var i
+   var setlength
+   var unit
+   var curlink
+
+  setlength=set.Length;
+   for (i=0; i<setlength; i++){
+      unit=SetMember(set, i);
+      curlink=unit.Links;
+      while (curlink){
+         eval ("curlink."+function_name+"()");
+         curlink=curlink.Next;
+      }
+    }
+  }
+
+
+
+//CONNECTING SETS AND UNITS
+
+function ConnectSets (FromSet, ToSet, hi, lo){
+   var i
+   var j
+   var from
+   var to
+   for (i=0; i<ToSet.Length; i++) {
+      to=ToSet.Members[i];
+      for (j=0; j<FromSet.Length; j++) {
+         from=FromSet.Members[j];
+         if (to != from)
+           CreateLink (from, to, hi, lo);
+      }
+   }
+}
+
+function ConnectUnitToSet (unit, ToSet, hi, lo){
+   var i
+   var j
+   var to
+   for (i=0; i<ToSet.Length; i++) {
+      to=ToSet.Members[i];
+      if (to != unit)
+         CreateLink (unit, to, hi, lo);
+   }
+}
+      
+ 
+function myrandom (hi, lo) {
+   var r=Math.random()*(hi-lo) + lo
+   return r
+}
+
+
+
+//UNIT UPDATE AND WEIGHT CHANGE FUNCTIONS
+
+function UpdateOutput () {
+   this.Output=1/(1+Math.exp(-this.WeightedSum()))
+}
+   
+function WeightedSum () {
+   var sum=0
+   var curlink=this.Links
+   while (curlink){
+      sum += curlink.Weight * curlink.From.Output;
+      curlink = curlink.Next;
+    }
+	     
+   return sum
+}
+
+function SetOutputError () {
+  this.Error = (this.Target - this.Output)*this.Output*(1.0 - this.Output)
+  outerror += this.Error*this.Error
+  }
+
+function SetHiddenError (){
+  this.Error *= this.Output*(1.0 - this.Output);
+  }
+
+function Backwards (){
+  this.From.Error += this.To.Error*this.Weight;
+  newWeights.push(this.Weight);
+   
+  this.Free1 = learnrate*this.To.Error*this.From.Output + momentum*this.Free1;
+  this.Weight += this.Free1;
+  }
+
+function FromFirstHiddenBackwards (){
+  this.Free1 = learnrate*this.To.Error*this.From.Output + momentum*this.Free1;
+  this.Weight += this.Free1;
+  }
+
+   
+
+//CYCLE, MAKENET
+
+function setinput(){
+   var n=0
+   var val
+   if (input_string_index>=i_patterns.length) {
+      input_string_index=0
+      document.form1.outerror_output.value=outerror
+	  outerror=0
+   }
+   while (n<input_nr){
+      val=i_patterns.charAt(input_string_index)      
+      if (val!=" " && val!="\r" && val!="\n") {
+          SetMember(inputset, n).Output=i_patterns.charAt(input_string_index)
+          n++
+       }
+       input_string_index++
+    }
+}
+   
+function settarget(){
+   var n=0
+   var val
+   if (target_string_index>=t_patterns.length) target_string_index=0
+   while (n<target_nr){
+      val=t_patterns.charAt(target_string_index)      
+      if (val!=" " && val!="\r" && val!="\n") {
+         SetMember(outputset, n).Target=t_patterns.charAt(target_string_index)
+         n++
+      }
+      target_string_index++
+    }
+}
+
+
+
+function Cycle (k){
+   var nr=0
+   var n=0
+   if (network_ready==0) alert ("Please create the network first by clicking on the button 'Create network'")
+   else{
+   while (nr<k){
+     setinput()
+     settarget()
+     Run()
+     document.form1.Current_cycle.value=current_cycle;
+	 var currentWeights = newWeights.toString().replace(/,/g, ', ');
+	 document.form1.Current_weight.value=currentWeights;
+	 newWeights = [].splice(0);
+
+     current_cycle++
+
+     
+     nr++
+   }
+  }
+}
+
+
+function MakeNet(){
+   var n
+   var nr_input=parseInt(document.form1.InputNr.value)
+   var nr_hidden=parseInt(document.form1.HiddenNr.value)
+   var nr_output=parseInt(document.form1.OutputNr.value)
+   learnrate=parseFloat(document.form1.Lrate.value)
+
+   inputset=MakeSet("input", nr_input)
+   hiddenset=MakeSet("hidden", nr_hidden)
+   outputset=MakeSet("output", nr_output)
+   biasset=MakeSet("bias", 1)
+
+   ConnectSets (inputset, hiddenset, 1, -1)    
+   ConnectSets (hiddenset, outputset, 1, -1)    
+   ConnectSets (biasset, hiddenset, 1, -1)    
+   ConnectSets (biasset, outputset, 1, -1) 
+
+   SetMember (biasset, 0).Output=1
+
+   i_patterns=document.form1.input_patterns.value
+   t_patterns=document.form1.target_patterns.value
+   input_nr=inputset.Length 
+   target_nr=outputset.Length 
+   nr_input_patterns=i_patterns.length/input_nr
+
+  document.form1.Cycles.value=1
+  document.form1.Current_cycle.value=0
+  document.form1.outerror_output.value=0
+  document.form1.Current_weight.value="";
+
+  outerror=0
+  current_cycle=1
+  network_ready=1  
+
+   imageslength=document.images.length
+   for (n=0; n< imageslength-1; n++) {
+     document.images[n].src="actbg.gif"
+   }
+}
+
+
+function Reset(){
+   var n
+  document.form1.Cycles.value=1
+  document.form1.Current_cycle.value=0
+  document.form1.outerror_output.value=0
+  outerror=0
+  current_cycle=1
+}
+
+
+function Run (){
+   TraverseSet (hiddenset, "UpdateOutput")
+   TraverseSet (outputset, "UpdateOutput")
+   TraverseSet (outputset, "SetOutputError")
+   TraverseSetLinks (outputset, "Backwards")
+   TraverseSet (hiddenset, "SetHiddenError")
+   TraverseSetLinks (hiddenset, "FromFirstHiddenBackwards")
+}
+
+</script>
+</head>
+
+
+
+
+<body>
+<a name="top"></a>
+<hr>
+
+
+
+<hr>
+<form name=form1>
+
+<table border=1>
+<tr>
+<th>
+Input patterns:
+<th>
+Target patterns:
+<tr>
+<td>
+<TEXTAREA NAME="input_patterns" ROWS=10 COLS=20>
+0 0
+1 1
+0 1
+1 0</TEXTAREA>
+<td>
+<TEXTAREA NAME="target_patterns" ROWS=10 COLS=20>
+0
+0
+1
+1</TEXTAREA>
+</table>
+<p>
+
+<hr>
+<p>
+
+<hr>
+<table border=1>
+<th colspan=2>Network Structure
+<th colspan=2>Running the Network
+<tr>
+<td>
+Units in Input Layer:
+<td>
+<input type=text name="InputNr" value=2 size=5>
+<td>
+Nr of cycles to run: 
+<td>
+<input type=text name="Cycles" value=1 size=5>
+<td>
+Weights   input1, input2, hidden layers
+</td>
+<tr>
+<td>
+Units in Hidden Layer:
+<td>
+<input type=text name="HiddenNr" value=3 size=5>
+<td>
+Current cycle number: 
+<td>
+<input type=text name="Current_cycle" value=0 size=5>
+<td>
+<input type=text name="Current_weight" value=0 size=500>
+ 
+</td>
+
+<tr>
+<td>
+Units in Output Layer:
+<td>
+<input type=text name="OutputNr" value=1 size=5>
+<td>
+Total sum of error squares: 
+<td>
+<input type=text name=outerror_output value=0 size=5>
+<td>
+</td>
+
+<tr>
+<td>
+Learning rate:
+<td>
+<input type=text name="Lrate" value=0.5 size=5>
+<td>
+
+<td>
+<tr>
+<td colspan=2>
+<input type=button value="Create network" onclick="MakeNet()">
+<td colspan=2>
+<input type=button value="Train" onclick="Cycle(parseInt(this.form.Cycles.value))">
+</table>
+
+<p>
+</form>
+
+<br><br><br>
+
+
+
+</body>
+</html>
